@@ -2,10 +2,10 @@ changelog
 ===
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.io7m.changelog/com.io7m.changelog.svg?style=flat-square)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.io7m.changelog%22)
-[![Maven Central (snapshot)](https://img.shields.io/nexus/s/https/s01.oss.sonatype.org/com.io7m.changelog/com.io7m.changelog.svg?style=flat-square)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/io7m/changelog/)
+[![Maven Central (snapshot)](https://img.shields.io/nexus/s/com.io7m.changelog/com.io7m.changelog?server=https%3A%2F%2Fs01.oss.sonatype.org&style=flat-square)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/io7m/changelog/)
 [![Codecov](https://img.shields.io/codecov/c/github/io7m/changelog.svg?style=flat-square)](https://codecov.io/gh/io7m/changelog)
 
-![changelog](./src/site/resources/changelog.jpg?raw=true)
+![com.io7m.changelog](./src/site/resources/changelog.jpg?raw=true)
 
 | JVM | Platform | Status |
 |-----|----------|--------|
