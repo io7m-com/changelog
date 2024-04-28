@@ -34,7 +34,7 @@ $ changelog write-xhtml
     <td>2020-12-10</td>
     <td>
       Change: Improve spacing in plain text log (tickets:
-      <a href="https://github.com/io7m/changelog/issues/11">11</a>
+      <a href="https://www.github.com/io7m-com/changelog/issues/11">11</a>
       )
     </td>
   </tr>
@@ -58,7 +58,7 @@ $ changelog write-xhtml
     <td>2017-01-10</td>
     <td>
       Change: Fix printing of version numbers in report generation. (tickets:
-      <a href="https://github.com/io7m/changelog/issues/3">3</a>
+      <a href="https://www.github.com/io7m-com/changelog/issues/3">3</a>
       )
     </td>
   </tr>
@@ -70,7 +70,7 @@ $ changelog write-xhtml
     <td>2017-01-10</td>
     <td>
       Change: Fix date formatting in report generation. (tickets:
-      <a href="https://github.com/io7m/changelog/issues/2">2</a>
+      <a href="https://www.github.com/io7m-com/changelog/issues/2">2</a>
       )
     </td>
   </tr>
