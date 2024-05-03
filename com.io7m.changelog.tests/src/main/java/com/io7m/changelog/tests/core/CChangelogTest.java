@@ -24,6 +24,7 @@ import com.io7m.changelog.core.CVersion;
 import com.io7m.changelog.core.CVersions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.Clock;
 import java.time.ZonedDateTime;
@@ -59,6 +60,7 @@ public final class CChangelogTest
 
   @Test
   public void testNextVersionSemantic()
+    throws IOException
   {
     final var version =
       CVersions.parse("1.0.0");
@@ -95,6 +97,7 @@ public final class CChangelogTest
 
   @Test
   public void testFindTicketSystemDefault()
+    throws IOException
   {
     final var version =
       CVersions.parse("1.0.0");

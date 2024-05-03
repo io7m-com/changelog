@@ -17,16 +17,25 @@
 package com.io7m.changelog.tests.core;
 
 import com.io7m.changelog.core.CVersion;
+import com.io7m.changelog.core.CVersionQualifier;
 import com.io7m.changelog.core.CVersions;
 import com.io7m.jaffirm.core.PreconditionViolationException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class CVersionStandardTest
 {
@@ -56,6 +65,7 @@ public final class CVersionStandardTest
 
   @Test
   public void testOrdering()
+    throws IOException
   {
     final CVersion p000 = CVersions.parse("0.0.0");
     final CVersion p010 = CVersions.parse("0.1.0");
@@ -78,39 +88,39 @@ public final class CVersionStandardTest
         final CVersion right = numbers.get(j);
 
         System.out.println("Compare "
-                             + left
-                             + " "
-                             + right
-                             + " == "
-                             + left.compareTo(right));
+                           + left
+                           + " "
+                           + right
+                           + " == "
+                           + left.compareTo(right));
 
         if (j == index) {
-          Assertions.assertEquals(0L, left.compareTo(right));
+          assertEquals(0L, left.compareTo(right));
         }
         if (j < index) {
-          Assertions.assertEquals(1L, left.compareTo(right));
-          Assertions.assertEquals(-1L, right.compareTo(left));
+          assertEquals(1L, left.compareTo(right));
+          assertEquals(-1L, right.compareTo(left));
         }
         if (j > index) {
-          Assertions.assertEquals(-1L, left.compareTo(right));
-          Assertions.assertEquals(1L, right.compareTo(left));
+          assertEquals(-1L, left.compareTo(right));
+          assertEquals(1L, right.compareTo(left));
         }
       }
     }
 
-    Assertions.assertEquals(0L, p000.compareTo(p000));
-    Assertions.assertEquals(-1L, p000.compareTo(p100));
-    Assertions.assertEquals(1L, p100.compareTo(p000));
+    assertEquals(0L, p000.compareTo(p000));
+    assertEquals(-1L, p000.compareTo(p100));
+    assertEquals(1L, p100.compareTo(p000));
 
-    Assertions.assertEquals(0L, p010.compareTo(p010));
-    Assertions.assertEquals(-1L, p000.compareTo(p010));
-    Assertions.assertEquals(-1L, p010.compareTo(p110));
-    Assertions.assertEquals(1L, p010.compareTo(p000));
+    assertEquals(0L, p010.compareTo(p010));
+    assertEquals(-1L, p000.compareTo(p010));
+    assertEquals(-1L, p010.compareTo(p110));
+    assertEquals(1L, p010.compareTo(p000));
 
-    Assertions.assertEquals(0L, p111.compareTo(p111));
-    Assertions.assertEquals(-1L, p011.compareTo(p111));
-    Assertions.assertEquals(-1L, p010.compareTo(p110));
-    Assertions.assertEquals(1L, p010.compareTo(p000));
+    assertEquals(0L, p111.compareTo(p111));
+    assertEquals(-1L, p011.compareTo(p111));
+    assertEquals(-1L, p010.compareTo(p110));
+    assertEquals(1L, p010.compareTo(p000));
   }
 
   @Test
@@ -123,10 +133,167 @@ public final class CVersionStandardTest
 
   @Test
   public void testValid_1()
+    throws IOException
   {
     final CVersion vs = CVersions.parse("1.2.3");
-    Assertions.assertEquals(1L, vs.major().longValue());
-    Assertions.assertEquals(2L, vs.minor().longValue());
-    Assertions.assertEquals(3L, vs.patch().longValue());
+    assertEquals(1L, vs.major().longValue());
+    assertEquals(2L, vs.minor().longValue());
+    assertEquals(3L, vs.patch().longValue());
+  }
+
+  @Test
+  public void testValid_2()
+    throws IOException
+  {
+    final CVersion vs = CVersions.parse("1.2.3-beta0001");
+    assertEquals(1L, vs.major().longValue());
+    assertEquals(2L, vs.minor().longValue());
+    assertEquals(3L, vs.patch().longValue());
+    assertEquals("beta0001", vs.qualifier().orElseThrow().text());
+  }
+
+  private static DynamicTest invalidVersionTestOf(
+    final String text)
+  {
+    return DynamicTest.dynamicTest(
+      "testInvalidVersion_%s".formatted(text),
+      () -> {
+        final var ex =
+          assertThrows(IOException.class, () -> {
+            CVersions.parse(text);
+          });
+        ex.printStackTrace(System.err);
+      });
+  }
+
+  private static DynamicTest validVersionTestOf(
+    final String text)
+  {
+    return DynamicTest.dynamicTest(
+      "testValidVersion_%s".formatted(text),
+      () -> {
+        final var p0 = CVersions.parse(text);
+        final var p1 = CVersions.parse(text);
+        assertEquals(p0, p1);
+        assertEquals(p0, p0);
+        assertEquals(p0.hashCode(), p1.hashCode());
+        assertEquals(p0.toString(), p1.toString());
+        assertEquals(text, "%s".formatted(p0));
+        assertEquals(0, p0.compareTo(p1));
+        assertNotEquals(p0, Integer.valueOf(23));
+      });
+  }
+
+
+  /**
+   * Ensure that the ordering relation matches the semver spec.
+   */
+
+  @Test
+  public void testSpecOrdering0()
+  {
+    final var names =
+      List.of(
+        "1.0.0-SNAPSHOT",
+        "1.0.0-alpha",
+        "1.0.0-alpha.1",
+        "1.0.0-alpha.beta",
+        "1.0.0-beta",
+        "1.0.0-beta.2",
+        "1.0.0-beta.11",
+        "1.0.0-rc.1",
+        "1.0.0"
+      );
+
+    final var versions =
+      names.stream()
+        .map(x -> {
+          try {
+            return CVersions.parse(x);
+          } catch (final IOException e) {
+            throw new RuntimeException(e);
+          }
+        }).toList();
+
+    final var versionsSorted =
+      versions.stream()
+        .sorted()
+        .toList();
+
+    assertEquals(versions, versionsSorted);
+  }
+
+  /**
+   * Ensure that the ordering relation matches the semver spec.
+   *
+   * @throws Exception On errors
+   */
+
+  @Test
+  public void testSpecOrdering1()
+    throws Exception
+  {
+    final var v = CVersions.parse("1.0.0-SNAPSHOT");
+    final var q = v.qualifier().get();
+    assertEquals(0, q.compareTo(q));
+  }
+
+  /**
+   * @return A set of invalid version tests
+   */
+
+  @TestFactory
+  public Stream<DynamicTest> testInvalidVersions()
+  {
+    return Stream.of(
+      "",
+      "1",
+      "1.0",
+      "1.a",
+      "1.0.0-",
+      "1.0.0-β",
+      "v1.2.3"
+    ).map(CVersionStandardTest::invalidVersionTestOf);
+  }
+
+  /**
+   * @return A set of valid version tests
+   */
+
+  @TestFactory
+  public Stream<DynamicTest> testValidVersions()
+  {
+    return Stream.of(
+      "1.0.0",
+      "1.0.0-SNAPSHOT",
+      "1.0.0-alpha",
+      "1.0.0-alpha.1",
+      "1.0.0-alpha.beta",
+      "1.0.0-beta",
+      "1.0.0-beta.2",
+      "1.0.0-beta.11",
+      "1.0.0-rc.1",
+      "1.0.0",
+      "1.0.0-0.3.7",
+      "1.0.0-x.7.z.92",
+      "1.0.0-x-y-z.-"
+    ).map(CVersionStandardTest::validVersionTestOf);
+  }
+
+  /**
+   * An invalid version.
+   */
+
+  @Test
+  public void testInvalidQualifier0()
+  {
+    assertThrows(IllegalArgumentException.class, () -> {
+      CVersion.builder()
+        .setMajor(ONE)
+        .setMinor(ZERO)
+        .setPatch(ZERO)
+        .setQualifier(new CVersionQualifier("β"))
+        .build();
+    });
   }
 }

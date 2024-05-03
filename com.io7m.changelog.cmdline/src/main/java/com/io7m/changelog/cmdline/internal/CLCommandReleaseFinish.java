@@ -20,6 +20,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.io7m.changelog.core.CChangelog;
 import com.io7m.changelog.core.CRelease;
+import com.io7m.changelog.core.CVersion;
 import com.io7m.changelog.core.CVersions;
 import com.io7m.changelog.parser.api.CParseErrorHandlers;
 import com.io7m.changelog.xml.api.CXMLChangelogParserProviderType;
@@ -100,9 +101,12 @@ public final class CLCommandReleaseFinish extends CLAbstractCommand
     final var changelog =
       parsers.parse(this.path, CParseErrorHandlers.loggingHandler(LOG));
 
-    final var targetVersionOpt =
-      Optional.ofNullable(this.versionText)
-        .map(CVersions::parse);
+    final Optional<CVersion> targetVersionOpt;
+    if (this.versionText != null) {
+      targetVersionOpt = Optional.of(CVersions.parse(this.versionText));
+    } else {
+      targetVersionOpt = Optional.empty();
+    }
 
     final var targetReleaseOpt =
       changelog.findTargetReleaseOrLatestOpen(targetVersionOpt);

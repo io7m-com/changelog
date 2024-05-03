@@ -437,8 +437,17 @@ public final class CXMLChangelogParsers
             break;
           }
           case "version": {
-            this.release_builder.setVersion(
-              CVersions.parse(attributes.getValue(index)));
+            try {
+              this.release_builder.setVersion(
+                CVersions.parse(attributes.getValue(index))
+              );
+            } catch (final IOException e) {
+              this.error(new SAXParseException(
+                e.getMessage(),
+                this.locator,
+                e
+              ));
+            }
             break;
           }
           case "ticket-system": {

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 <code@io7m.com> http://io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,52 +14,71 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package com.io7m.changelog.core;
 
-import com.io7m.junreachable.UnreachableCodeException;
-
+import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
- * Functions for parsing and processing versions.
+ * A parser of version numbers.
  */
 
 public final class CVersions
 {
-  private static Pattern VALID_VERSION =
-    Pattern.compile("(\\p{Nd}+)\\.(\\p{Nd}+)\\.(\\p{Nd}+)");
+  private static final Pattern VERSION_TEXT =
+    Pattern.compile("([0-9]+)\\.([0-9]+)\\.([0-9]+)(-(.+))?");
 
   private CVersions()
   {
-    throw new UnreachableCodeException();
+
   }
 
   /**
-   * Attempt to parse a version number.
+   * Parse a version number.
    *
-   * @param version The version string
+   * @param text The version text
    *
-   * @return A new version number
+   * @return The parsed version
+   *
+   * @throws IOException On errors
    */
 
   public static CVersion parse(
-    final String version)
+    final String text)
+    throws IOException
   {
-    Objects.requireNonNull(version, "Version");
-
-    final var matcher = VALID_VERSION.matcher(version);
+    final var matcher = VERSION_TEXT.matcher(text);
     if (matcher.matches()) {
-      final var major = new BigInteger(matcher.group(1));
-      final var minor = new BigInteger(matcher.group(2));
-      final var patch = new BigInteger(matcher.group(3));
-      return CVersion.of(major, minor, patch);
+      try {
+        final var qualifierText = matcher.group(5);
+        final Optional<CVersionQualifier> qualifier;
+        if (qualifierText != null) {
+          qualifier = Optional.of(new CVersionQualifier(qualifierText));
+        } else {
+          qualifier = Optional.empty();
+        }
+
+        return CVersion.builder()
+          .setMajor(new BigInteger(matcher.group(1)))
+          .setMinor(new BigInteger(matcher.group(2)))
+          .setPatch(new BigInteger(matcher.group(3)))
+          .setQualifier(qualifier)
+          .build();
+      } catch (final Exception e) {
+        throw new IOException(
+          "Version text '%s' cannot be parsed: %s"
+            .formatted(text, e.getMessage()),
+          e
+        );
+      }
     }
 
-    throw new IllegalArgumentException(String.format(
-      "Expected a version number matching '%s'",
-      VALID_VERSION)
+    throw new IOException(
+      "Version text '%s' must match the pattern '%s'"
+        .formatted(text, VERSION_TEXT)
     );
   }
 }

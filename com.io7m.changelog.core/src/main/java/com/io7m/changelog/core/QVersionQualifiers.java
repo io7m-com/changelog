@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 <code@io7m.com> http://io7m.com
+ * Copyright © 2024 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,13 +14,38 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * Software changelogs (Core)
- */
 
-@Export
-@Version("5.0.0")
 package com.io7m.changelog.core;
 
-import org.osgi.annotation.bundle.Export;
-import org.osgi.annotation.versioning.Version;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+
+/**
+ * Functions over version qualifiers.
+ */
+
+final class QVersionQualifiers
+{
+  private QVersionQualifiers()
+  {
+
+  }
+
+  static final Comparator<Optional<CVersionQualifier>> COMPARE_QUALIFIER =
+    (x, y) -> {
+      if (Objects.equals(x, y)) {
+        return 0;
+      }
+      if (x.isEmpty()) {
+        return 1;
+      }
+      if (y.isEmpty()) {
+        return -1;
+      }
+
+      final var xx = x.get();
+      final var yy = y.get();
+      return xx.compareTo(yy);
+    };
+}

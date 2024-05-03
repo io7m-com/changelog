@@ -200,25 +200,10 @@
             </annotationProcessorPaths>
           </configuration>
         </plugin>
-
-        <!-- Spot bugs -->
-        <plugin>
-          <groupId>com.github.spotbugs</groupId>
-          <artifactId>spotbugs-maven-plugin</artifactId>
-          <configuration>
-            <excludeFilterFile>spotbugs-filter.xml</excludeFilterFile>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
-      <!-- Spot bugs -->
-      <plugin>
-        <groupId>com.github.spotbugs</groupId>
-        <artifactId>spotbugs-maven-plugin</artifactId>
-      </plugin>
-
       <plugin>
         <groupId>com.io7m.minisite</groupId>
         <artifactId>com.io7m.minisite.maven_plugin</artifactId>
