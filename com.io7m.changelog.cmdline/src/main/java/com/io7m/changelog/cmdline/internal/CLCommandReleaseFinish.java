@@ -20,6 +20,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.io7m.changelog.core.CChangelog;
 import com.io7m.changelog.core.CRelease;
+import com.io7m.changelog.core.CVersion;
 import com.io7m.changelog.core.CVersions;
 import com.io7m.changelog.parser.api.CParseErrorHandlers;
 import com.io7m.changelog.xml.api.CXMLChangelogParserProviderType;
@@ -35,6 +36,11 @@ import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.TreeMap;
+
+/**
+ * The "release-finish" command.
+ */
 
 @Parameters(commandDescription = "Finish a release.")
 public final class CLCommandReleaseFinish extends CLAbstractCommand
@@ -96,9 +102,12 @@ public final class CLCommandReleaseFinish extends CLAbstractCommand
     final var changelog =
       parsers.parse(this.path, CParseErrorHandlers.loggingHandler(LOG));
 
-    final var targetVersionOpt =
-      Optional.ofNullable(this.versionText)
-        .map(CVersions::parse);
+    final Optional<CVersion> targetVersionOpt;
+    if (this.versionText != null) {
+      targetVersionOpt = Optional.of(CVersions.parse(this.versionText));
+    } else {
+      targetVersionOpt = Optional.empty();
+    }
 
     final var targetReleaseOpt =
       changelog.findTargetReleaseOrLatestOpen(targetVersionOpt);
@@ -118,10 +127,13 @@ public final class CLCommandReleaseFinish extends CLAbstractCommand
         .setDate(ZonedDateTime.now(Clock.systemUTC()))
         .build();
 
+    final var releasesNow = new TreeMap<>(changelog.releases());
+    releasesNow.put(closedRelease.version(), closedRelease);
+
     final var newChangelog =
       CChangelog.builder()
         .from(changelog)
-        .putReleases(closedRelease.version(), closedRelease)
+        .setReleases(releasesNow)
         .build();
 
     writers.write(this.path, pathTemp, newChangelog);

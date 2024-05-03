@@ -35,9 +35,14 @@ import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.TreeMap;
 
 import static com.io7m.claypot.core.CLPCommandType.Status.FAILURE;
 import static com.io7m.claypot.core.CLPCommandType.Status.SUCCESS;
+
+/**
+ * The "release-begin" command.
+ */
 
 @Parameters(commandDescription = "Start the development of a new release.")
 public final class CLCommandReleaseBegin extends CLAbstractCommand
@@ -148,10 +153,13 @@ public final class CLCommandReleaseBegin extends CLAbstractCommand
         .setVersion(nextVersion)
         .build();
 
+    final var releasesNow = new TreeMap<>(changelog.releases());
+    releasesNow.put(release.version(), release);
+
     final var newChangelog =
       CChangelog.builder()
         .from(changelog)
-        .putReleases(release.version(), release)
+        .setReleases(releasesNow)
         .build();
 
     writers.write(this.path, pathTemp, newChangelog);

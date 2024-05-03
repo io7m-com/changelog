@@ -24,19 +24,42 @@ import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.Formattable;
 import java.util.Formatter;
+import java.util.Optional;
+
+/**
+ * A version number.
+ */
 
 @Value.Immutable
 @ImmutablesStyleType
 public interface CVersionType extends Comparable<CVersionType>, Formattable
 {
+  /**
+   * @return The major version
+   */
+
   @Value.Parameter
   BigInteger major();
+
+  /**
+   * @return The minor version
+   */
 
   @Value.Parameter
   BigInteger minor();
 
+  /**
+   * @return The patch version
+   */
+
   @Value.Parameter
   BigInteger patch();
+
+  /**
+   * @return The version qualifier
+   */
+
+  Optional<CVersionQualifier> qualifier();
 
   @Override
   default int compareTo(
@@ -45,8 +68,15 @@ public interface CVersionType extends Comparable<CVersionType>, Formattable
     return Comparator.comparing(CVersionType::major)
       .thenComparing(CVersionType::minor)
       .thenComparing(CVersionType::patch)
+      .thenComparing(
+        CVersionType::qualifier,
+        QVersionQualifiers.COMPARE_QUALIFIER)
       .compare(this, other);
   }
+
+  /**
+   * Check preconditions for the type.
+   */
 
   @Value.Check
   default void checkPreconditions()
@@ -69,6 +99,16 @@ public interface CVersionType extends Comparable<CVersionType>, Formattable
     final int width,
     final int precision)
   {
-    formatter.format("%s.%s.%s", this.major(), this.minor(), this.patch());
+    if (this.qualifier().isPresent()) {
+      formatter.format(
+        "%s.%s.%s-%s",
+        this.major(),
+        this.minor(),
+        this.patch(),
+        this.qualifier().get()
+      );
+    } else {
+      formatter.format("%s.%s.%s", this.major(), this.minor(), this.patch());
+    }
   }
 }

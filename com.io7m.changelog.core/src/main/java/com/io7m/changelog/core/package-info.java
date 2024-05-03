@@ -19,7 +19,7 @@
  */
 
 @Export
-@Version("4.0.0")
+@Version("5.0.0")
 package com.io7m.changelog.core;
 
 import org.osgi.annotation.bundle.Export;

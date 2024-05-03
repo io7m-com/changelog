@@ -17,14 +17,14 @@
 package com.io7m.changelog.cmdline;
 
 import com.io7m.changelog.cmdline.internal.CLCommandChangeAdd;
-import com.io7m.changelog.cmdline.internal.CLCommandReleaseCurrent;
-import com.io7m.changelog.cmdline.internal.CLCommandReleaseSetVersion;
-import com.io7m.changelog.cmdline.internal.CLCommandWriteAtom;
 import com.io7m.changelog.cmdline.internal.CLCommandInitialize;
-import com.io7m.changelog.cmdline.internal.CLCommandWritePlain;
 import com.io7m.changelog.cmdline.internal.CLCommandReleaseBegin;
+import com.io7m.changelog.cmdline.internal.CLCommandReleaseCurrent;
 import com.io7m.changelog.cmdline.internal.CLCommandReleaseFinish;
+import com.io7m.changelog.cmdline.internal.CLCommandReleaseSetVersion;
 import com.io7m.changelog.cmdline.internal.CLCommandVersion;
+import com.io7m.changelog.cmdline.internal.CLCommandWriteAtom;
+import com.io7m.changelog.cmdline.internal.CLCommandWritePlain;
 import com.io7m.changelog.cmdline.internal.CLCommandWriteXHTML;
 import com.io7m.claypot.core.CLPApplicationConfiguration;
 import com.io7m.claypot.core.CLPCommandConstructorType;

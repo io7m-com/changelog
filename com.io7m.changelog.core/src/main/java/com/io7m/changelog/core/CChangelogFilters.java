@@ -19,10 +19,9 @@ package com.io7m.changelog.core;
 import com.io7m.junreachable.UnreachableCodeException;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -64,10 +63,10 @@ public final class CChangelogFilters
         .stream()
         .filter(v -> v.compareTo(version) >= 0)
         .limit(count)
-        .collect(Collectors.toList());
+        .toList();
 
     final var releasesFiltered =
-      new HashMap<CVersion, CRelease>(versions.size());
+      new TreeMap<CVersion, CRelease>();
     for (final var currentVersion : versions) {
       releasesFiltered.put(currentVersion, releases.get(version));
     }
@@ -104,11 +103,15 @@ public final class CChangelogFilters
         .collect(Collectors.toSet());
 
     final var newReleases =
-      changelog.releases()
-        .entrySet()
-        .stream()
-        .filter(e -> versions.contains(e.getKey()))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      new TreeMap<CVersion, CRelease>();
+
+    changelog.releases()
+      .entrySet()
+      .stream()
+      .filter(e -> versions.contains(e.getKey()))
+      .forEach(entry -> {
+        newReleases.put(entry.getKey(), entry.getValue());
+      });
 
     return CChangelog.builder()
       .from(changelog)

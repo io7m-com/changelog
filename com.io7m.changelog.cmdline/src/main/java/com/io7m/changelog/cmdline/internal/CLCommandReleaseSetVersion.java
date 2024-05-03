@@ -32,8 +32,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Clock;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
 import java.util.ServiceLoader;
+import java.util.TreeMap;
+
+/**
+ * The "release-set-version" command.
+ */
 
 @Parameters(commandDescription = "Set the version number of the current release.")
 public final class CLCommandReleaseSetVersion extends CLAbstractCommand
@@ -117,14 +121,14 @@ public final class CLCommandReleaseSetVersion extends CLAbstractCommand
         .setVersion(version)
         .build();
 
-    final var oldReleases = new HashMap<>(changelog.releases());
-    oldReleases.remove(currentRelease.version());
-    oldReleases.put(version, updatedRelease);
+    final var releasesNow = new TreeMap<>(changelog.releases());
+    releasesNow.remove(currentRelease.version());
+    releasesNow.put(version, updatedRelease);
 
     final var newChangelog =
       CChangelog.builder()
         .from(changelog)
-        .setReleases(oldReleases)
+        .setReleases(releasesNow)
         .build();
 
     writers.write(this.path, pathTemp, newChangelog);
