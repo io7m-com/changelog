@@ -36,7 +36,7 @@
 
   <simpleType name="versionType">
     <restriction base="string">
-      <pattern value="(\p{Nd}+)\.(\p{Nd}+)\.(\p{Nd}+)"/>
+      <pattern value="(\p{Nd}+)\.(\p{Nd}+)\.(\p{Nd}+)(-[\p{Ll}\p{Lu}\p{Nd}]+)?"/>
       <maxLength value="64"/>
     </restriction>
   </simpleType>
