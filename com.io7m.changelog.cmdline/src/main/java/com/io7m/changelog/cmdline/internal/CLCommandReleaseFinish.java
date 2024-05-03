@@ -36,6 +36,7 @@ import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.TreeMap;
 
 /**
  * The "release-finish" command.
@@ -126,10 +127,13 @@ public final class CLCommandReleaseFinish extends CLAbstractCommand
         .setDate(ZonedDateTime.now(Clock.systemUTC()))
         .build();
 
+    final var releasesNow = new TreeMap<>(changelog.releases());
+    releasesNow.put(closedRelease.version(), closedRelease);
+
     final var newChangelog =
       CChangelog.builder()
         .from(changelog)
-        .putReleases(closedRelease.version(), closedRelease)
+        .setReleases(releasesNow)
         .build();
 
     writers.write(this.path, pathTemp, newChangelog);

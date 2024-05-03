@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.TreeMap;
 
 /**
  * The "change-add" command.
@@ -164,10 +165,13 @@ public final class CLCommandChangeAdd extends CLAbstractCommand
         .setDate(now)
         .build();
 
+    final var releasesNow = new TreeMap<>(changelog.releases());
+    releasesNow.put(releaseWrite.version(), releaseWrite);
+
     final var changelogWrite =
       CChangelog.builder()
         .from(changelog)
-        .putReleases(releaseWrite.version(), releaseWrite)
+        .setReleases(releasesNow)
         .build();
 
     final var pathTemp = Paths.get(this.path + ".tmp");

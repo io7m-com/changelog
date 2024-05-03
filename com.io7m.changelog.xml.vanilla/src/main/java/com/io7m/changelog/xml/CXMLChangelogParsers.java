@@ -23,6 +23,7 @@ import com.io7m.changelog.core.CProjectName;
 import com.io7m.changelog.core.CRelease;
 import com.io7m.changelog.core.CTicketID;
 import com.io7m.changelog.core.CTicketSystem;
+import com.io7m.changelog.core.CVersion;
 import com.io7m.changelog.core.CVersions;
 import com.io7m.changelog.parser.api.CParseError;
 import com.io7m.changelog.parser.api.CParseErrorType;
@@ -58,6 +59,7 @@ import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 
 /**
@@ -133,6 +135,7 @@ public final class CXMLChangelogParsers
     private final CChange.Builder change_builder;
     private final CTicketSystem.Builder ticket_system_builder;
     private final Consumer<CParseError> receiver;
+    private final TreeMap<CVersion, CRelease> releases;
     private Locator locator;
     private boolean failed;
     private int openCount;
@@ -158,6 +161,7 @@ public final class CXMLChangelogParsers
       this.ticket_system_builder = CTicketSystem.builder();
       this.elements = new ArrayDeque<>();
       this.date_format = CDateFormatters.newDateFormatter();
+      this.releases = new TreeMap<>();
     }
 
     @Override
@@ -549,7 +553,7 @@ public final class CXMLChangelogParsers
     private void onEndRelease()
     {
       final CRelease r = this.release_builder.build();
-      this.changelog_builder.putReleases(r.version(), r);
+      this.releases.put(r.version(), r);
     }
 
     @Override
@@ -661,6 +665,7 @@ public final class CXMLChangelogParsers
           throw new IOException(
             this.uri + " - At least one error was encountered during parsing and/or validation");
         }
+        this.changelog_builder.setReleases(this.releases);
         return this.changelog_builder.build();
       } catch (final SAXException e) {
         throw new IOException(e);

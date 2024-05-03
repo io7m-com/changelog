@@ -29,6 +29,7 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -80,10 +81,13 @@ public final class CChangelogTest
         .setUri(URI.create("http://www.example.com"))
         .build();
 
+    final var releasesNow = new TreeMap<CVersion, CRelease>();
+    releasesNow.put(version, release);
+
     final var c =
       CChangelog.builder()
         .setProject(CProjectName.of("changelog"))
-        .putReleases(version, release)
+        .setReleases(releasesNow)
         .putTicketSystems("x", ticketSystem)
         .build();
 
@@ -124,10 +128,13 @@ public final class CChangelogTest
         .setUri(URI.create("http://www.example.com"))
         .build();
 
+    final var releasesNow = new TreeMap<CVersion, CRelease>();
+    releasesNow.put(version, release);
+
     final var c =
       CChangelog.builder()
         .setProject(CProjectName.of("changelog"))
-        .putReleases(version, release)
+        .setReleases(releasesNow)
         .putTicketSystems("x", ticketSystem0)
         .putTicketSystems("y", ticketSystem1)
         .build();

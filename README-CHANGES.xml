@@ -34,12 +34,17 @@
         <c:change date="2021-01-12T00:00:00+00:00" summary="Improved documentation"/>
       </c:changes>
     </c:release>
-    <c:release date="2024-05-03T18:52:30+00:00" is-open="true" ticket-system="com.io7m.github.changelog" version="5.0.0">
+    <c:release date="2024-05-03T19:20:59+00:00" is-open="true" ticket-system="com.io7m.github.changelog" version="5.0.0">
       <c:changes>
         <c:change compatible="false" date="2024-04-28T00:00:00+00:00" summary="Require JDK 17"/>
-        <c:change date="2024-05-03T18:52:30+00:00" summary="Allow qualifiers in version numbers.">
+        <c:change date="2024-05-03T00:00:00+00:00" summary="Allow qualifiers in version numbers.">
           <c:tickets>
             <c:ticket id="24"/>
+          </c:tickets>
+        </c:change>
+        <c:change date="2024-05-03T19:20:59+00:00" summary="Ensure releases are serialized in order.">
+          <c:tickets>
+            <c:ticket id="25"/>
           </c:tickets>
         </c:change>
       </c:changes>
