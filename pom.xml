@@ -205,7 +205,7 @@
       <plugin>
         <groupId>com.io7m.minisite</groupId>
         <artifactId>com.io7m.minisite.maven_plugin</artifactId>
-        <version>5.0.0</version>
+        <version>5.1.0</version>
         <inherited>false</inherited>
         <executions>
           <execution>
