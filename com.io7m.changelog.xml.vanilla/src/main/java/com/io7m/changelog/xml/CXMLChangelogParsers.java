@@ -674,6 +674,7 @@ public final class CXMLChangelogParsers
 
     private enum CurrentElement
     {
+      // CHECKSTYLE:OFF
       CHANGELOG,
       RELEASES,
       RELEASE,
@@ -683,6 +684,7 @@ public final class CXMLChangelogParsers
       TICKET,
       TICKET_SYSTEMS,
       TICKET_SYSTEM
+      // CHECKSTYLE:ON
     }
   }
 }
